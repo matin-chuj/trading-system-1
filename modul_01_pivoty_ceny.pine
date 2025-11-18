@@ -1,0 +1,58 @@
+//@version=5
+indicator("Moduł 1 – Detektor Pivotów Ceny (Swing High/Low)", overlay=true)
+
+// ============================================================================
+// PARAMETRY WEJŚCIOWE
+// ============================================================================
+
+left  = input.int(2, "Pivot Left Bars",  minval=1, tooltip="Liczba świec po lewej stronie pivotu do porównania")
+right = input.int(2, "Pivot Right Bars", minval=1, tooltip="Liczba świec po prawej stronie pivotu do porównania. Pivot jest rozpoznany z opóźnieniem 'right' świec.")
+
+// Kolory markerów (opcjonalnie)
+colorPH = input.color(color.red,   "Kolor Pivot High")
+colorPL = input.color(color.green, "Kolor Pivot Low")
+
+// ============================================================================
+// FUNKCJE GŁÓWNE – DETEKCJA PIVOTÓW
+// ============================================================================
+
+pivotHigh(series float src, simple int left, simple int right) =>
+    ta.pivothigh(src, left, right)
+
+pivotLow(series float src, simple int left, simple int right) =>
+    ta.pivotlow(src, left, right)
+
+// ============================================================================
+// OBLICZENIA PIVOTÓW
+// ============================================================================
+
+ph = pivotHigh(high, left, right)
+pl = pivotLow(low, left, right)
+
+// ============================================================================
+// WIZUALIZACJA
+// ============================================================================
+
+plotshape(
+     series=ph,
+     title="Pivot High",
+     style=shape.circle,
+     location=location.abovebar,
+     color=colorPH,
+     size=size.small,
+     text="PH"
+     )
+
+plotshape(
+     series=pl,
+     title="Pivot Low",
+     style=shape.circle,
+     location=location.belowbar,
+     color=colorPL,
+     size=size.small,
+     text="PL"
+     )
+
+// ============================================================================
+// KONIEC MODUŁU 1
+// ============================================================================
