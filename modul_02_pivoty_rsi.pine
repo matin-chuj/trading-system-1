@@ -1,0 +1,30 @@
+//@version=5
+indicator("Moduł 2 – Detektor Pivotów RSI (Swing High/Low)", overlay=false)
+
+// Parametry
+rsiLen = input.int(14, "RSI Length", minval=1)
+left   = input.int(2,  "Pivot Left Bars",  minval=1)
+right  = input.int(2,  "Pivot Right Bars", minval=1)
+
+// Funkcje
+getRsi(series float src, simple int length) =>
+    ta.rsi(src, length)
+
+getRsiPivotHigh(series float rsi, simple int left, simple int right) =>
+    ta.pivothigh(rsi, left, right)
+
+getRsiPivotLow(series float rsi, simple int left, simple int right) =>
+    ta.pivotlow(rsi, left, right)
+
+// Obliczenia
+rsi = getRsi(close, rsiLen)
+rsiPh = getRsiPivotHigh(rsi, left, right)
+rsiPl = getRsiPivotLow(rsi, left, right)
+
+// Wizualizacja
+plot(rsi, title="RSI", color=color.blue, linewidth=2)
+hline(70, "Overbought", color=color.new(color.red, 50), linestyle=hline.style_dashed)
+hline(30, "Oversold",   color=color.new(color.green, 50), linestyle=hline.style_dashed)
+
+plotshape(rsiPh, title="RSI Pivot High", style=shape.circle, location=location.absolute, color=color.red, size=size.small)
+plotshape(rsiPl, title="RSI Pivot Low", style=shape.circle, location=location.absolute, color=color.green, size=size.small)
