@@ -1,0 +1,34 @@
+// @version=5
+indicator("Moduł 6 – VSA (Volume Spread Analysis)", overlay=true)
+
+// Parametry
+minRelVolClimax = input.float(2.0, "Min relVol for High Volume", step=0.1, minval=1.0)
+maxRelSpreadStopping = input.float(0.7, "Max relSpread for Stopping", step=0.1, minval=0.1)
+closeNearHighPct = input.float(0.66, "Close Near High Threshold", step=0.01, minval=0.0, maxval=1.0)
+closeNearLowPct = input.float(0.33, "Close Near Low Threshold", step=0.01, minval=0.0, maxval=1.0)
+
+// Statystyki z Modułu 5
+volLen = 50
+atrLen = 14
+volSma = ta.sma(volume, volLen)
+relVol = na(volSma) or volSma == 0 ? na : volume / volSma
+spread = high - low
+atr = ta.atr(atrLen)
+relSpread = na(atr) or atr == 0 ? na : spread / atr
+
+// Pomocnicze
+isBull = close > open
+isBear = close < open
+closePos = spread > 0 ? (close - low) / spread : 0.5
+closeNearHigh = closePos >= closeNearHighPct
+closeNearLow = closePos <= closeNearLowPct
+
+// VSA Sygnały
+stoppingBull = not na(relVol) and not na(relSpread) and relVol >= minRelVolClimax and relSpread <= maxRelSpreadStopping and closeNearHigh and isBull
+stoppingBear = not na(relVol) and not na(relSpread) and relVol >= minRelVolClimax and relSpread <= maxRelSpreadStopping and closeNearLow and isBear
+climaxUp = relVol >= minRelVolClimax and relSpread >= 1.5 and isBull and closeNearHigh
+climaxDown = relVol >= minRelVolClimax and relSpread >= 1.5 and isBear and closeNearLow
+
+// Wizualizacja
+plotshape(stoppingBull, title="Stopping Bull", text="SV↑", style=shape.labelup, location=location.belowbar, color=color.green, size=size.small)
+plotshape(stoppingBear, title="Stopping Bear", text="SV↓", style=shape.labeldown, location=location.abovebar, color=color.red, size=size.small)
