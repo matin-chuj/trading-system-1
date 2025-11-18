@@ -1,0 +1,55 @@
+//@version=5
+indicator("Moduł 3 – Magazyn Pivotów Ceny i RSI", overlay=true)
+
+leftPrice  = input.int(2, "Price Pivot - Left Bars",  minval=1)
+rightPrice = input.int(2, "Price Pivot - Right Bars", minval=1)
+rsiLen     = input.int(14, "RSI Length", minval=1)
+leftRsi    = input.int(2,  "RSI Pivot - Left Bars",  minval=1)
+rightRsi   = input.int(2,  "RSI Pivot - Right Bars", minval=1)
+
+ph = ta.pivothigh(high, leftPrice, rightPrice)
+pl = ta.pivotlow(low, leftPrice, rightPrice)
+rsi = ta.rsi(close, rsiLen)
+rsiPh = ta.pivothigh(rsi, leftRsi, rightRsi)
+rsiPl = ta.pivotlow(rsi, leftRsi, rightRsi)
+
+var float lastPricePh = na
+var float prevPricePh = na
+var float lastPricePl = na
+var float prevPricePl = na
+var int lastPricePhIndex = na
+var int prevPricePhIndex = na
+var int lastPricePlIndex = na
+var int prevPricePlIndex = na
+var float lastRsiPh = na
+var float prevRsiPh = na
+var float lastRsiPl = na
+var float prevRsiPl = na
+var int lastRsiPhIndex = na
+var int prevRsiPhIndex = na
+var int lastRsiPlIndex = na
+var int prevRsiPlIndex = na
+
+if not na(ph)
+    prevPricePh := lastPricePh
+    prevPricePhIndex := lastPricePhIndex
+    lastPricePh := ph
+    lastPricePhIndex := bar_index - rightPrice
+if not na(pl)
+    prevPricePl := lastPricePl
+    prevPricePlIndex := lastPricePlIndex
+    lastPricePl := pl
+    lastPricePlIndex := bar_index - rightPrice
+if not na(rsiPh)
+    prevRsiPh := lastRsiPh
+    prevRsiPhIndex := lastRsiPhIndex
+    lastRsiPh := rsiPh
+    lastRsiPhIndex := bar_index - rightRsi
+if not na(rsiPl)
+    prevRsiPl := lastRsiPl
+    prevRsiPlIndex := lastRsiPlIndex
+    lastRsiPl := rsiPl
+    lastRsiPlIndex := bar_index - rightRsi
+
+plotshape(ph, title="PH", style=shape.triangledown, location=location.abovebar, color=color.red, size=size.tiny)
+plotshape(pl, title="PL", style=shape.triangleup, location=location.belowbar, color=color.green, size=size.tiny)
